@@ -43,6 +43,12 @@ public class Consumer {
     static KafkaProducer<String, Customer> producer;
 
 
+    static double totalRecieved = 0;
+    static double totalSent=0;
+    static double desiredPercentage =0.7;
+    static double currentPercentage=0;
+
+
 
     public Consumer() throws IOException, URISyntaxException, InterruptedException {
     }
@@ -74,23 +80,33 @@ public class Consumer {
 
 
         tps = new ArrayList<>();
-        tps.add(new TopicPartition("testtopic2", 0));
-        tps.add(new TopicPartition("testtopic2", 1));
-        tps.add(new TopicPartition("testtopic2", 2));
-        tps.add(new TopicPartition("testtopic2", 3));
-        tps.add(new TopicPartition("testtopic2", 4));
+        tps.add(new TopicPartition("testtopic1", 0));
+        tps.add(new TopicPartition("testtopic1", 1));
+        tps.add(new TopicPartition("testtopic1", 2));
+        tps.add(new TopicPartition("testtopic1", 3));
+        tps.add(new TopicPartition("testtopic1", 4));
+
+
 
         try {
             while (true) {
                 Long timeBeforePolling = System.currentTimeMillis();
                 ConsumerRecords<String, Customer> records = consumer.poll(Duration.ofMillis(Long.MAX_VALUE));
+
                 if (records.count() != 0) {
+                    totalSent = 0;
+                    totalRecieved =0;
+                    double desired = desiredPercentage;
+
 
                     for (TopicPartition tp : tps) {
-                      double percenttopic2 = records.records(tp).size() /**0.7*/;
                         double currentEventIndex = 0;
+                        totalRecieved = totalRecieved + records.records(tp).size();
+                        double percenttopic2 = records.count()* desired;
+                        log.info("percent ttopic2 {}", percenttopic2);
                         for (ConsumerRecord<String, Customer> record : records.records(tp)) {
                             totalEvents++;
+
                             if (System.currentTimeMillis() - record.timestamp() <= 5000) {
                                 eventsNonViolating++;
                             } else {
@@ -103,8 +119,9 @@ public class Consumer {
 
                               if (currentEventIndex < percenttopic2) {
 
-                                  producer.send(new ProducerRecord<String, Customer>("testtopic5",
+                                  producer.send(new ProducerRecord<String, Customer>("testtopic2",
                                           tp.partition(), record.timestamp(), record.key(), record.value()));
+                                  totalSent++;
 
 
                                 }
@@ -137,6 +154,8 @@ public class Consumer {
                     log.info("Percent violating so far {}", percentViolating);
                     log.info("Percent non violating so far {}", percentNonViolating);
                     log.info("total events {}", totalEvents);
+                    desiredPercentage = whatPercentageToSendNow();
+
                 }
             }
 
@@ -146,6 +165,17 @@ public class Consumer {
             consumer.close();
             log.info("Closed consumer and we are done");
         }
+    }
+
+
+
+    private static double whatPercentageToSendNow() {
+
+        currentPercentage = totalSent/totalRecieved;
+        log.info("totalSent/totalRecieved {}", currentPercentage);
+        log.info("desiredPercentage + (desiredPercentage-currentPercentage) {}", desiredPercentage + (0.7-currentPercentage));
+        return desiredPercentage + (0.7-currentPercentage);
+
     }
 
 
