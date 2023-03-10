@@ -18,7 +18,6 @@ public class KafkaConsumerConfig {
     private final Long messageCount;
     private final String additionalConfig;
 
-
     public KafkaConsumerConfig(String bootstrapServers, String topic, String groupId,
                                String clientRack, Long messageCount, String sleep,
                                String additionalConfig) {

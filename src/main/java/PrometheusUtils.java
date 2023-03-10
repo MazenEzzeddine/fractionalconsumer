@@ -8,9 +8,6 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 
 public class PrometheusUtils {
-
-
-
     public static PrometheusMeterRegistry prometheusRegistry;
     public static TimeMeasure latencygaugemeasure;
     public static Gauge latencygauge;

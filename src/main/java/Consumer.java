@@ -35,14 +35,8 @@ public class Consumer {
     static float averageRatePerConsumerForGrpc = 0.0f;
     static long pollsSoFar = 0;
 
-
-
-
-
    static  ArrayList<TopicPartition> tps;
     static KafkaProducer<String, Customer> producer;
-
-
 
     public Consumer() throws IOException, URISyntaxException, InterruptedException {
     }
@@ -101,13 +95,13 @@ public class Consumer {
                                 Thread.sleep(Long.parseLong(config.getSleep()));
                                 // PrometheusUtils.latencygaugemeasure.setDuration(System.currentTimeMillis() - record.timestamp());
 
-                              if (currentEventIndex < percenttopic2) {
+                         /*     if (currentEventIndex < percenttopic2) {*/
 
                                   producer.send(new ProducerRecord<String, Customer>("testtopic5",
                                           tp.partition(), record.timestamp(), record.key(), record.value()));
 
 
-                                }
+                        /*        }*/
                                 currentEventIndex++;
 
                             } catch (InterruptedException e) {
