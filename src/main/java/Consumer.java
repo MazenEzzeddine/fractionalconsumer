@@ -58,7 +58,7 @@ public class Consumer {
                 org.apache.kafka.clients.consumer.RangeAssignor.class.getName());*/
         boolean commit = !Boolean.parseBoolean(config.getEnableAutoCommit());
         consumer = new KafkaConsumer<String, Customer>(props);
-        consumer.subscribe(Collections.singletonList(config.getTopic()));
+        consumer.subscribe(Collections.singletonList(config.getTopic())/*, new RebalanceListener()*/);
         log.info("Subscribed to topic {}", config.getTopic());
 
 
@@ -68,11 +68,11 @@ public class Consumer {
 
 
         tps = new ArrayList<>();
-        tps.add(new TopicPartition("testtopic2", 0));
-        tps.add(new TopicPartition("testtopic2", 1));
-        tps.add(new TopicPartition("testtopic2", 2));
-        tps.add(new TopicPartition("testtopic2", 3));
-        tps.add(new TopicPartition("testtopic2", 4));
+        tps.add(new TopicPartition("testtopic1", 0));
+        tps.add(new TopicPartition("testtopic1", 1));
+        tps.add(new TopicPartition("testtopic1", 2));
+        tps.add(new TopicPartition("testtopic1", 3));
+        tps.add(new TopicPartition("testtopic1", 4));
 
         try {
             while (true) {
@@ -81,7 +81,7 @@ public class Consumer {
                 if (records.count() != 0) {
 
                     for (TopicPartition tp : tps) {
-                      double percenttopic2 = records.records(tp).size() /**0.7*/;
+                      double percenttopic2 = records.records(tp).size()* 0.8; /**0.7*/;
                         double currentEventIndex = 0;
                         for (ConsumerRecord<String, Customer> record : records.records(tp)) {
                             totalEvents++;
@@ -95,13 +95,13 @@ public class Consumer {
                                 Thread.sleep(Long.parseLong(config.getSleep()));
                                 // PrometheusUtils.latencygaugemeasure.setDuration(System.currentTimeMillis() - record.timestamp());
 
-                         /*     if (currentEventIndex < percenttopic2) {*/
+                              if (currentEventIndex < percenttopic2) {
 
-                                  producer.send(new ProducerRecord<String, Customer>("testtopic5",
+                                  producer.send(new ProducerRecord<String, Customer>("testtopic2",
                                           tp.partition(), record.timestamp(), record.key(), record.value()));
 
 
-                        /*        }*/
+                                }
                                 currentEventIndex++;
 
                             } catch (InterruptedException e) {
