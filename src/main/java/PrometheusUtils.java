@@ -6,6 +6,7 @@ import io.micrometer.prometheus.PrometheusMeterRegistry;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class PrometheusUtils {
     public static PrometheusMeterRegistry prometheusRegistry;
@@ -30,8 +31,24 @@ public class PrometheusUtils {
         }
 
 
+
+
+
+
+
+
+
+
+
+
+
         latencygaugemeasure = new TimeMeasure(0.0);
-        latencygauge = Gauge.builder("latencygauge", latencygaugemeasure, TimeMeasure::getDuration).register(prometheusRegistry);//prometheusRegistry.gauge("timergauge" );
+        latencygauge = Gauge.builder("latencygauge",  latencygaugemeasure, TimeMeasure::getDuration).register(prometheusRegistry);//prometheusRegistry.gauge("timergauge" );
+
+        //latencygauge = Gauge.builder("latencygauge",  latencygaugemeasure, TimeMeasure::getDuration).tag("child", "testtopic1").register(prometheusRegistry);
+        //prometheusRegistry.gauge("timergauge" );
+
+
     }
 
 }

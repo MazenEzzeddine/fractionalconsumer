@@ -96,7 +96,6 @@ public class Consumer {
                                 // PrometheusUtils.latencygaugemeasure.setDuration(System.currentTimeMillis() - record.timestamp());
 
                               if (currentEventIndex < percenttopic2) {
-
                                   producer.send(new ProducerRecord<String, Customer>("testtopic2",
                                           tp.partition(), record.timestamp(), record.key(), record.value()));
 
